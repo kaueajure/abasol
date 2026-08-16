@@ -9,6 +9,21 @@ import { SolarPanel3D } from "./SolarPanel3D";
 
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
+const completeNavigation = [
+  ["Início", "/"],
+  ["Sobre", "/sobre"],
+  ["Soluções", "/solucoes"],
+  ["Residencial", "/solucoes/residencial"],
+  ["Empresarial", "/solucoes/empresarial"],
+  ["Agronegócio", "/solucoes/rural"],
+  ["Serviços", "/servicos"],
+  ["Como funciona", "/como-funciona"],
+  ["Projetos", "/projetos"],
+  ["Depoimentos", "/depoimentos"],
+  ["Conteúdo", "/conteudos"],
+  ["Contato", "/contato"],
+] as const;
+
 export function Header({ solid = false }: { solid?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -57,15 +72,15 @@ export function Header({ solid = false }: { solid?: boolean }) {
           <Link href="/conteudos">Conteúdo</Link>
         </nav>
         <Link className="header-cta" href="/simulador">Simular economia <Arrow /></Link>
-        <button className="menu-toggle" type="button" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} onClick={() => setOpen(!open)}>
-          <span /><span />
+        <button className="menu-toggle" type="button" aria-label={open ? "Fechar menu" : "Abrir todas as páginas"} aria-expanded={open} onClick={() => setOpen(!open)}>
+          <b>{open ? "Fechar" : "Menu"}</b><i aria-hidden="true"><span /><span /></i>
         </button>
       </header>
       <div className={`mobile-menu ${open ? "is-open" : ""}`} aria-hidden={!open}>
-        <p className="eyebrow">Navegação</p>
+        <p className="eyebrow">Todas as páginas</p>
         <div className="mobile-links">
-          {[['Início','/'],['Soluções','/solucoes'],['Como funciona','/como-funciona'],['Projetos','/projetos'],['Sobre','/sobre'],['Conteúdo','/conteudos'],['Contato','/contato']].map(([label, href], index) => (
-            <Link key={href} href={href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{label}</Link>
+          {completeNavigation.map(([label, href], index) => (
+            <Link key={href} href={href} onClick={() => setOpen(false)}><small>{String(index + 1).padStart(2, "0")}</small>{label}</Link>
           ))}
         </div>
         <Link className="button button-primary" href="/simulador" onClick={() => setOpen(false)}>Simular meu projeto <Arrow /></Link>

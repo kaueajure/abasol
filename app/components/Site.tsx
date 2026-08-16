@@ -12,8 +12,8 @@ export function Footer() {
       <div className="footer-top">
         <div><Link className="brand footer-brand" href="/"><span className="brand-mark" aria-hidden="true"><i /><i /><i /><i /></span><span>ABA SOL</span></Link><p>Projeto, instalação, homologação e acompanhamento de sistemas fotovoltaicos.</p></div>
         <div><h4>Soluções</h4><Link href="/solucoes/residencial">Residencial</Link><Link href="/solucoes/empresarial">Empresarial</Link><Link href="/solucoes/rural">Agronegócio</Link><Link href="/servicos">Serviços</Link></div>
-        <div><h4>Empresa</h4><Link href="/sobre">Sobre</Link><Link href="/como-funciona">Como funciona</Link><Link href="/projetos">Projetos</Link><Link href="/conteudos">Conteúdo</Link></div>
-        <div><h4>Contato</h4><a href={`tel:${company.phoneHref}`}>{company.phoneDisplay}</a><a href={`mailto:${company.email}`}>{company.email}</a><a href={mapsUrl} target="_blank" rel="noreferrer">{company.address.city} — {company.address.state}</a><span>{company.businessHours}</span></div>
+        <div><h4>Empresa</h4><Link href="/sobre">Sobre</Link><Link href="/como-funciona">Como funciona</Link><Link href="/projetos">Projetos</Link><Link href="/depoimentos">Depoimentos</Link><Link href="/conteudos">Conteúdo</Link></div>
+        <div><h4>Contato</h4><Link href="/contato">Enviar solicitação</Link><a href={`tel:${company.phoneHref}`}>{company.phoneDisplay}</a><a href={`mailto:${company.email}`}>{company.email}</a><a href={mapsUrl} target="_blank" rel="noreferrer">{company.address.city} — {company.address.state}</a><span>{company.businessHours}</span></div>
       </div>
       <div className="footer-bottom"><span>© {new Date().getFullYear()} {company.name}</span><div><Link href="/privacidade">Privacidade</Link><Link href="/termos">Termos de uso</Link></div></div>
     </footer>
