@@ -80,16 +80,6 @@ const panelStory = [
   { label: "Monitoramento", title: "A produção fica visível.", text: "O acompanhamento depende dos equipamentos definidos no projeto." },
 ] as const;
 
-const panelFrames = [
-  { rx: 58, ry: -28, rz: -12, scale: .62, x: 31, y: 15, shine: 16 },
-  { rx: 24, ry: -12, rz: -5, scale: .82, x: 19, y: 7, shine: 36 },
-  { rx: 5, ry: 1, rz: 0, scale: 1.02, x: 8, y: -1, shine: 54 },
-  { rx: 20, ry: 19, rz: 4, scale: 1.12, x: -2, y: -4, shine: 75 },
-  { rx: 2, ry: 0, rz: 0, scale: 1.2, x: -12, y: 25, shine: 88 },
-] as const;
-
-const mix = (a: number, b: number, amount: number) => a + (b - a) * amount;
-
 export function SolarScrollStory() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -109,16 +99,14 @@ export function SolarScrollStory() {
       const progress = Math.max(0, Math.min(1, -rect.top / range));
       const scaled = progress * 4;
       const index = Math.min(3, Math.floor(scaled));
-      const local = Math.min(1, scaled - index);
-      const start = panelFrames[index];
-      const end = panelFrames[index + 1];
-      stage.style.setProperty("--panel-rx", `${mix(start.rx, end.rx, local)}deg`);
-      stage.style.setProperty("--panel-ry", `${mix(start.ry, end.ry, local)}deg`);
-      stage.style.setProperty("--panel-rz", `${mix(start.rz, end.rz, local)}deg`);
-      stage.style.setProperty("--panel-scale", `${mix(start.scale, end.scale, local)}`);
-      stage.style.setProperty("--panel-x", `${mix(start.x, end.x, local)}vw`);
-      stage.style.setProperty("--panel-y", `${mix(start.y, end.y, local)}vh`);
-      stage.style.setProperty("--panel-shine", `${mix(start.shine, end.shine, local)}%`);
+      const turn = progress * 360;
+      const arc = Math.sin(progress * Math.PI);
+      const light = .5 + .5 * Math.sin((turn + 35) * Math.PI / 180);
+      stage.style.setProperty("--panel-turn", `${turn}deg`);
+      stage.style.setProperty("--panel-scale", `${.76 + arc * .16}`);
+      stage.style.setProperty("--panel-x", `${18 - progress * 24}vw`);
+      stage.style.setProperty("--panel-y", `${4 - arc * 6}vh`);
+      stage.style.setProperty("--panel-shine", `${16 + light * 68}%`);
       stage.style.setProperty("--story-progress", `${progress}`);
       setActive(current => current === index ? current : index);
     };
@@ -133,12 +121,15 @@ export function SolarScrollStory() {
     <section className="solar-scroll-story" ref={sectionRef} aria-label="Como a energia percorre o sistema">
       <div className="solar-scroll-sticky" ref={stageRef}>
         <div className="story-grid" aria-hidden="true" />
-        <div className="story-heading"><p className="eyebrow">Como o sistema trabalha</p><span>Role para acompanhar</span></div>
+        <div className="story-heading"><p className="eyebrow">Como o sistema trabalha</p><span>Role para girar o módulo · 360°</span></div>
         <div className="story-copy" aria-live="polite">
           {panelStory.map((item, index) => <article key={item.label} className={active === index ? "is-active" : ""}><span>0{index + 1} · {item.label}</span><h2>{item.title}</h2><p>{item.text}</p></article>)}
         </div>
         <div className="story-panel-wrap" aria-hidden="true">
-          <div className="story-panel"><div className="story-cells">{Array.from({ length: 60 }).map((_, index) => <i key={index} />)}</div></div>
+          <div className="story-panel">
+            <div className="story-panel-face story-panel-front"><div className="story-cells">{Array.from({ length: 60 }).map((_, index) => <i key={index} />)}</div></div>
+            <div className="story-panel-face story-panel-back"><div className="story-back-rails"><i /><i /><i /></div><span>Aba Sol · estrutura traseira</span></div>
+          </div>
         </div>
         <div className="story-rail" aria-hidden="true"><i /><span>01</span><span>02</span><span>03</span><span>04</span></div>
         <div className="story-spec" aria-hidden="true"><span>Módulo fotovoltaico</span><b>superfície · célula · estrutura</b></div>
