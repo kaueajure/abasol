@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { company, whatsappUrl } from "../company";
 import { solutions } from "../content";
+import { SolarPanel3D } from "./SolarPanel3D";
 
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
@@ -83,6 +84,7 @@ const panelStory = [
 export function SolarScrollStory() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const panelProgressRef = useRef(0);
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -101,6 +103,7 @@ export function SolarScrollStory() {
       const index = Math.min(3, Math.floor(scaled));
       const turn = progress * 360;
       const light = .5 + .5 * Math.sin((turn + 35) * Math.PI / 180);
+      panelProgressRef.current = progress;
       stage.style.setProperty("--panel-turn", `${turn}deg`);
       stage.style.setProperty("--panel-shine", `${16 + light * 68}%`);
       stage.style.setProperty("--story-progress", `${progress}`);
@@ -122,10 +125,7 @@ export function SolarScrollStory() {
           {panelStory.map((item, index) => <article key={item.label} className={active === index ? "is-active" : ""}><span>0{index + 1} · {item.label}</span><h2>{item.title}</h2><p>{item.text}</p></article>)}
         </div>
         <div className="story-panel-wrap" aria-hidden="true">
-          <div className="story-panel">
-            <div className="story-panel-face story-panel-front"><div className="story-cells">{Array.from({ length: 60 }).map((_, index) => <i key={index} />)}</div></div>
-            <div className="story-panel-face story-panel-back"><div className="story-back-rails"><i /><i /><i /></div><span>Aba Sol · estrutura traseira</span></div>
-          </div>
+          <SolarPanel3D progressRef={panelProgressRef} />
         </div>
         <div className="story-rail" aria-hidden="true"><i /><span>01</span><span>02</span><span>03</span><span>04</span></div>
         <div className="story-spec" aria-hidden="true"><span>Módulo fotovoltaico</span><b>superfície · célula · estrutura</b></div>
