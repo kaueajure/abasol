@@ -114,7 +114,6 @@ export function AboutPage() {
       <div className="about-values-head"><p className="eyebrow dark-eye">Nossos Valores</p><div><h2>Nossos Valores</h2><p>Os pilares que sustentam nossa conduta e compromisso com você.</p></div></div>
       <div className="about-values-list">{values.map(([title,text],index)=><article key={title}><span>0{index+1}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
     </section>
-    <section className="about-team"><p className="eyebrow dark-eye">Nossa Equipe</p><h2>Nossa Equipe</h2><p>Contamos com um time de especialistas apaixonados por energia renovável, prontos para transformar seu projeto em realidade.</p><Link className="button button-dark" href="/contato">Falar com a equipe <Arrow/></Link></section>
     <FinalCTA/>
   </StandardLayout>;
 }
