@@ -93,7 +93,30 @@ export function ProcessPage() {
 }
 
 export function AboutPage() {
-  return <StandardLayout><InnerHero eyebrow="Sobre a Aba Sol" title="Energia solar em São José do Rio Preto e região." text="Projetos residenciais, empresariais e rurais com análise, instalação e homologação." /><section className="about-story section-pad"><div data-reveal="image"><Image src="/solar-detail.webp" alt="Detalhe técnico de módulos fotovoltaicos, imagem de referência" fill sizes="(max-width: 760px) 100vw, 50vw" /><span>Imagem de referência técnica</span></div><article><p className="eyebrow dark-eye">Como a empresa trabalha</p><h2>Uma equipe acompanha o projeto completo.</h2><p>A Aba Sol reúne dimensionamento, projeto técnico, instalação, homologação, manutenção e monitoramento.</p><p>O atendimento informado pela empresa cobre casas, negócios e propriedades rurais da região.</p><Link className="text-link dark" href="/contato">Falar com a equipe <Arrow/></Link></article></section><FinalCTA/></StandardLayout>;
+  const values = [
+    ["Sustentabilidade", "Compromisso com o meio ambiente e as futuras gerações."],
+    ["Inovação", "Busca contínua por tecnologias e processos mais eficientes."],
+    ["Qualidade", "Excelência em produtos, serviços e atendimento."],
+    ["Transparência", "Relações honestas e claras com clientes e parceiros."],
+    ["Comprometimento", "Dedicação total a cada projeto e cliente."],
+  ];
+  return <StandardLayout>
+    <InnerHero eyebrow="Sobre Nós" title="Conheça a Aba Sol Energia" text="Nossa jornada em busca de um futuro mais sustentável e iluminado." />
+    <section className="about-story section-pad">
+      <div data-reveal="image"><Image src="/solar-detail.webp" alt="Detalhe técnico de módulos fotovoltaicos" fill sizes="(max-width: 760px) 100vw, 50vw" /><span>Aba Sol Energia</span></div>
+      <article><p className="eyebrow dark-eye">Nossa História</p><div className="about-history-stat"><strong>40+</strong><span>Anos de Experiência</span></div><p>Decorridos mais de 40 anos de serviços prestados no Grupo CPFL Energia, com muito orgulho e agradecimento pela oportunidade do aprendizado, vislumbrei na energia fotovoltaica, um segmento de mercado promissor e crescente, e com certeza, irá contribuir para diversificar a matriz energética do Brasil, principalmente pelo grande apelo à sustentabilidade.</p><p>Assim, apoiado pela minha família e parceiros, nasce a ABA SOL Energia Solar e Soluções Energéticas Ltda, focando principalmente em prover as melhores práticas para instalação de energia solar fotovoltaica, com segurança e preços justos, garantindo o reconhecimento e confiança de todos.</p></article>
+    </section>
+    <section className="about-purpose">
+      <article><span>01</span><p className="eyebrow">Missão</p><h2>Ser o preferido de nossos clientes.</h2><p>Ser o preferido de nossos clientes, por prover as melhores práticas energéticas sustentáveis, de forma simples, com segurança, mitigando os riscos inerentes à atividade e preços justos, garantindo o reconhecimento e confiança de todos.</p></article>
+      <article><span>02</span><p className="eyebrow">Visão</p><h2>Energia como bem essencial.</h2><p>Contribuir para a melhoria do bem-estar das pessoas e da sociedade, através da produção de energia sustentável, considerando que a energia é um bem essencial ao desenvolvimento e à manutenção das gerações atuais e futuras.</p></article>
+    </section>
+    <section className="about-values section-pad">
+      <div className="about-values-head"><p className="eyebrow dark-eye">Nossos Valores</p><div><h2>Nossos Valores</h2><p>Os pilares que sustentam nossa conduta e compromisso com você.</p></div></div>
+      <div className="about-values-list">{values.map(([title,text],index)=><article key={title}><span>0{index+1}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
+    </section>
+    <section className="about-team"><p className="eyebrow dark-eye">Nossa Equipe</p><h2>Nossa Equipe</h2><p>Contamos com um time de especialistas apaixonados por energia renovável, prontos para transformar seu projeto em realidade.</p><Link className="button button-dark" href="/contato">Falar com a equipe <Arrow/></Link></section>
+    <FinalCTA/>
+  </StandardLayout>;
 }
 
 export function ServicesPage() {

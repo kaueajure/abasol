@@ -6,7 +6,7 @@ import { AboutPage, ArticlePage, ContactPage, ContentPage, LegalPage, ProcessPag
 type Props = { params: Promise<{ slug: string[] }> };
 
 const pageMeta: Record<string, [string, string]> = {
-  sobre: ["Sobre", "Conheça a forma de trabalho e a atuação regional da Aba Sol Energia Solar."],
+  sobre: ["Sobre a Aba Sol Energia Solar", "Conheça a história, missão, visão e valores da Aba Sol Energia Solar."],
   solucoes: ["Soluções", "Energia solar residencial, empresarial e rural com análise técnica."],
   servicos: ["Serviços", "Dimensionamento, projeto, instalação, homologação, manutenção e monitoramento."],
   "como-funciona": ["Como funciona", "Entenda todas as etapas de um projeto de energia solar."],
