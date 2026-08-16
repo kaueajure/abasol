@@ -14,7 +14,7 @@ export function SolarPanel3D({ progressRef }: { progressRef: { current: number }
     let visible = true;
 
     const setup = async () => {
-      const THREE = await import("three");
+      const THREE = await import("../lib/three-solar");
       if (cancelled || !mount) return;
 
       const scene = new THREE.Scene();
@@ -28,7 +28,7 @@ export function SolarPanel3D({ progressRef }: { progressRef: { current: number }
       mount.appendChild(renderer.domElement);
 
       const panel = new THREE.Group();
-      panel.rotation.x = -.15;
+      panel.rotation.x = -.22;
       panel.rotation.z = -.025;
       scene.add(panel);
 
@@ -152,6 +152,9 @@ export function SolarPanel3D({ progressRef }: { progressRef: { current: number }
       warmLight.position.set(5, -3, 4);
       scene.add(warmLight);
 
+      let baseScale = .9;
+      let baseX = 1.05;
+      let baseY = .2;
       const resize = () => {
         const width = Math.max(1, mount.clientWidth);
         const height = Math.max(1, mount.clientHeight);
@@ -159,8 +162,11 @@ export function SolarPanel3D({ progressRef }: { progressRef: { current: number }
         camera.aspect = width / height;
         camera.position.set(0, 0, width < 760 ? 14 : 10.6);
         camera.updateProjectionMatrix();
-        panel.scale.setScalar(width < 760 ? .66 : .9);
-        panel.position.set(width < 760 ? .25 : 1.3, width < 760 ? 1.45 : .32, 0);
+        baseScale = width < 760 ? .66 : .9;
+        baseX = width < 760 ? .25 : 1.05;
+        baseY = width < 760 ? 1.45 : .2;
+        panel.scale.setScalar(baseScale);
+        panel.position.set(baseX, baseY, 0);
       };
       resize();
       const resizeObserver = new ResizeObserver(resize);
@@ -168,13 +174,29 @@ export function SolarPanel3D({ progressRef }: { progressRef: { current: number }
       const visibilityObserver = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "180px" });
       visibilityObserver.observe(mount);
 
-      let currentRotation = progressRef.current * Math.PI * 2;
+      let currentRotation = -.3;
+      let currentScale = baseScale;
+      let currentX = baseX;
+      let currentY = baseY;
       const render = () => {
         animationFrame = window.requestAnimationFrame(render);
         if (!visible) return;
-        const targetRotation = progressRef.current * Math.PI * 2;
+        const progress = Math.max(0, Math.min(1, progressRef.current));
+        const targetRotation = -.3 + progress * .72;
+        const closeUp = Math.sin(Math.min(1, progress * 1.7) * Math.PI);
+        const targetScale = baseScale * (1 + closeUp * .17 - Math.max(0, progress - .76) * .22);
+        const targetX = baseX + Math.max(0, progress - .46) * .7;
+        const targetY = baseY + Math.sin(progress * Math.PI) * .12;
         currentRotation += (targetRotation - currentRotation) * .12;
+        currentScale += (targetScale - currentScale) * .1;
+        currentX += (targetX - currentX) * .1;
+        currentY += (targetY - currentY) * .1;
         panel.rotation.y = currentRotation;
+        panel.rotation.x = -.22 + Math.sin(progress * Math.PI) * .13;
+        panel.scale.setScalar(currentScale);
+        panel.position.set(currentX, currentY, 0);
+        keyLight.intensity = 2.6 + Math.sin(progress * Math.PI) * 1.8;
+        warmLight.intensity = 8 + progress * 10;
         renderer.render(scene, camera);
       };
       renderer.render(scene, camera);

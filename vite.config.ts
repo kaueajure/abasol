@@ -44,6 +44,9 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // Three.js is isolated in a lazy, desktop-only chunk; keep the size warning
+    // focused on unexpectedly large eagerly loaded application bundles.
+    build: { chunkSizeWarningLimit: 550 },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

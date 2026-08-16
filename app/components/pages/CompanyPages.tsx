@@ -1,0 +1,31 @@
+import Image from "next/image";
+import Link from "next/link";
+import { company, mapsUrl, whatsappUrl } from "../../company";
+import { faqs, processSteps } from "../../content";
+import { ContactForm, Simulator } from "../forms/LeadForms";
+import { SiteLayout } from "../layout/SiteChrome";
+import { Arrow, FAQ, PageHero, PrimaryCTA, SectionIntro } from "../ui/Elements";
+
+export function AboutPage() {
+  return <SiteLayout><PageHero eyebrow="Sobre a Aba Sol" title="Experiência no setor elétrico aplicada à energia solar." text="A empresa nasceu em São José do Rio Preto depois de mais de 40 anos de atuação anterior no Grupo CPFL Energia." /><section className="about-origin section shell"><div className="about-origin__media"><Image src="/solar-detail.webp" alt="Detalhe técnico de células fotovoltaicas" fill sizes="(max-width: 800px) 100vw, 46vw" /><span>São José do Rio Preto · SP</span></div><article><p className="label">Origem</p><h2>Da experiência acumulada à criação da Aba Sol.</h2><p>Depois de mais de 40 anos de serviços prestados no Grupo CPFL Energia, a energia fotovoltaica foi identificada como um segmento de atuação promissor.</p><p>Com apoio da família e de parceiros, nasceu a ABA SOL Energia Solar e Soluções Energéticas Ltda., voltada à instalação de sistemas fotovoltaicos com segurança, práticas técnicas consistentes e preços justos.</p></article></section>
+    <section className="about-experience"><div className="shell"><strong>40+</strong><div><p className="label">Anos no setor elétrico</p><h2>Conhecimento anterior que orienta a forma de trabalhar.</h2></div></div></section>
+    <section className="work-principles section shell"><SectionIntro eyebrow="Na prática" title="Segurança, clareza e acompanhamento próximo." /><div>{[["Leitura antes da proposta", "Consumo e condições do imóvel são avaliados antes do dimensionamento."], ["Processo completo", "Projeto, instalação e homologação são tratados como partes do mesmo trabalho."], ["Atendimento regional", `A atuação está concentrada em ${company.serviceRegion}.`]].map(([title, text], index) => <article key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{text}</p></article>)}</div></section>
+    <section className="purpose-compact shell"><div><p className="label">Missão</p><p>Ser a escolha dos clientes por práticas energéticas sustentáveis, segurança, simplicidade e preços justos.</p></div><div><p className="label">Visão</p><p>Contribuir para o bem-estar das pessoas por meio da produção de energia, entendida como essencial ao desenvolvimento.</p></div></section><PrimaryCTA /></SiteLayout>;
+}
+
+export function ProcessPage() {
+  return <SiteLayout><PageHero eyebrow="Como funciona" title="Da primeira conta à ativação do sistema." text="Cada etapa reduz incertezas antes que o sistema seja instalado." /><section className="process-page section shell"><ol>{processSteps.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><p className="label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.text}</p></div></li>)}</ol></section><section className="energy-route"><div className="shell"><p className="label">Depois da instalação</p><h2>Sol → módulos → inversor → quadro → imóvel</h2><p>O desenho final e o monitoramento dependem dos equipamentos e das condições definidas no projeto.</p></div></section><FAQ items={faqs} /><PrimaryCTA /></SiteLayout>;
+}
+
+export function SimulatorPage() { return <SiteLayout><PageHero eyebrow="Solicitar análise" title="Informe o imóvel e o consumo inicial." text="Os dados seguem para a equipe. Nenhuma economia é calculada automaticamente." /><section className="simulator-page section shell"><Simulator /></section></SiteLayout>; }
+
+export function ContactPage() {
+  return <SiteLayout><PageHero eyebrow="Contato" title="Fale diretamente com a Aba Sol." text={`Atendimento em ${company.serviceRegion}.`} /><section className="contact-page section shell"><aside><div><span>WhatsApp</span><a href={whatsappUrl()} target="_blank" rel="noreferrer">{company.phoneDisplay}</a></div><div><span>E-mail</span><a href={`mailto:${company.email}`}>{company.email}</a></div><div><span>Endereço</span><a href={mapsUrl} target="_blank" rel="noreferrer">{company.address.street}<br />{company.address.city} — {company.address.state}</a></div><div><span>Atendimento</span><p>{company.businessHours}</p></div></aside><ContactForm /></section></SiteLayout>;
+}
+
+export function LegalPage({ type }: { type: "privacidade" | "termos" }) {
+  const privacy = type === "privacidade";
+  return <SiteLayout><PageHero eyebrow="Informações legais" title={privacy ? "Política de Privacidade" : "Termos de Uso"} text={privacy ? "Como os dados enviados pelo site são tratados." : "Condições para uso das informações publicadas."} /><article className="legal shell section"><p>Última atualização: agosto de 2026.</p>{privacy ? <><h2>Dados coletados</h2><p>Os formulários solicitam dados de contato, cidade, tipo de imóvel e informações de consumo fornecidas voluntariamente para atendimento.</p><h2>Finalidade e envio</h2><p>As informações são usadas para responder à solicitação e iniciar a análise comercial e técnica. O envio online depende do serviço configurado pela empresa; quando ele não confirma o recebimento, o site não mostra uma mensagem de sucesso.</p><h2>Direitos</h2><p>Para solicitar acesso, correção ou exclusão, escreva para <a href={`mailto:${company.email}`}>{company.email}</a>.</p></> : <><h2>Conteúdo informativo</h2><p>O conteúdo explica o processo da Aba Sol e não substitui a avaliação técnica ou uma proposta formal.</p><h2>Resultados</h2><p>Geração, economia e retorno dependem das condições de cada projeto e não são prometidos automaticamente pelo site.</p><h2>Contato</h2><p>Dúvidas podem ser enviadas para <a href={`mailto:${company.email}`}>{company.email}</a>.</p></>}</article></SiteLayout>;
+}
+
+export function NotFoundPage() { return <SiteLayout><section className="not-found shell"><span>404</span><p className="label">Página não encontrada</p><h1>Este endereço não está disponível.</h1><p>O conteúdo pode ter sido retirado da área pública ou o link está incorreto.</p><Link className="button button--dark" href="/">Voltar ao início <Arrow /></Link></section></SiteLayout>; }
