@@ -100,12 +100,8 @@ export function SolarScrollStory() {
       const scaled = progress * 4;
       const index = Math.min(3, Math.floor(scaled));
       const turn = progress * 360;
-      const arc = Math.sin(progress * Math.PI);
       const light = .5 + .5 * Math.sin((turn + 35) * Math.PI / 180);
       stage.style.setProperty("--panel-turn", `${turn}deg`);
-      stage.style.setProperty("--panel-scale", `${.76 + arc * .16}`);
-      stage.style.setProperty("--panel-x", `${18 - progress * 24}vw`);
-      stage.style.setProperty("--panel-y", `${4 - arc * 6}vh`);
       stage.style.setProperty("--panel-shine", `${16 + light * 68}%`);
       stage.style.setProperty("--story-progress", `${progress}`);
       setActive(current => current === index ? current : index);
