@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import "./refinement.css";
 import { company } from "./company";
 
 const geistSans = Geist({
@@ -37,9 +38,9 @@ export const metadata: Metadata = {
     siteName: "Aba Sol Energia Solar",
     title: "Aba Sol Energia Solar",
     description: "Engenharia solar para residências, empresas e propriedades rurais em São José do Rio Preto e região.",
-    images: [{ url: "/og.png", width: 1734, height: 907, alt: "Aba Sol — Luz que trabalha para você." }],
+    images: [{ url: "/og-v2.png", width: 1732, height: 908, alt: "Aba Sol — Energia solar, medida pelo seu consumo." }],
   },
-  twitter: { card: "summary_large_image", title: "Aba Sol Energia Solar", description: "Engenharia solar para São José do Rio Preto e região.", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", title: "Aba Sol Energia Solar", description: "Engenharia solar para São José do Rio Preto e região.", images: ["/og-v2.png"] },
 };
 
 export default function RootLayout({

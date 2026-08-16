@@ -12,8 +12,8 @@ export const solutions: Solution[] = [
   {
     slug: "residencial",
     title: "Residencial",
-    kicker: "Energia no ritmo da casa",
-    description: "O projeto considera consumo, incidência solar, área útil do telhado e rotina do imóvel antes de definir qualquer equipamento.",
+    kicker: "Casas e condomínios",
+    description: "Conta de energia, telhado e sombreamento definem o dimensionamento residencial.",
     image: "/residencial.webp",
     needs: ["Leitura da conta de energia", "Análise do telhado e sombreamento", "Dimensionamento e homologação"],
     cta: "Simular projeto residencial",
@@ -21,8 +21,8 @@ export const solutions: Solution[] = [
   {
     slug: "empresarial",
     title: "Empresas",
-    kicker: "Energia como decisão de negócio",
-    description: "A análise cruza perfil de demanda, área disponível e condições da instalação para propor um sistema tecnicamente coerente.",
+    kicker: "Comércio e indústria",
+    description: "Consumo, demanda e área disponível orientam o projeto empresarial.",
     image: "/solar-roof.webp",
     needs: ["Perfil de consumo e demanda", "Telhado, solo e infraestrutura", "Projeto técnico e acompanhamento"],
     cta: "Solicitar análise empresarial",
@@ -30,8 +30,8 @@ export const solutions: Solution[] = [
   {
     slug: "rural",
     title: "Agronegócio",
-    kicker: "Projeto para a realidade do campo",
-    description: "Consumo, distância, estrutura disponível e dinâmica da operação rural orientam o estudo desde a primeira visita técnica.",
+    kicker: "Propriedades rurais",
+    description: "Cargas, distâncias e estruturas da propriedade entram na análise rural.",
     image: "/solar-field.webp",
     needs: ["Mapeamento da operação", "Área e infraestrutura disponíveis", "Instalação, homologação e monitoramento"],
     cta: "Solicitar estudo rural",

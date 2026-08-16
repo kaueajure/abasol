@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, PointerEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { company, whatsappUrl } from "../company";
@@ -13,10 +13,27 @@ export function Header({ solid = false }: { solid?: boolean }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 24);
+    let frame = 0;
+    const update = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        setScrolled(window.scrollY > 24);
+        const heroProgress = Math.min(1, window.scrollY / Math.max(window.innerHeight, 1));
+        document.documentElement.style.setProperty("--hero-progress", heroProgress.toFixed(3));
+        document.documentElement.style.setProperty("--hero-shift", `${window.scrollY * .16}px`);
+      });
+    };
     update();
     window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("is-revealed"); });
+    }, { threshold: .16 });
+    const observeReveals = () => document.querySelectorAll("[data-reveal]").forEach(element => observer.observe(element));
+    observeReveals();
+    const mutationObserver = new MutationObserver(observeReveals);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+    return () => { window.removeEventListener("scroll", update); observer.disconnect(); mutationObserver.disconnect(); window.cancelAnimationFrame(frame); };
   }, []);
 
   useEffect(() => {
@@ -56,52 +73,128 @@ export function Header({ solid = false }: { solid?: boolean }) {
   );
 }
 
-export function SolarPanelTilt() {
-  const move = (event: PointerEvent<HTMLDivElement>) => {
-    const box = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width - .5;
-    const y = (event.clientY - box.top) / box.height - .5;
-    event.currentTarget.style.setProperty("--rx", `${-y * 7}deg`);
-    event.currentTarget.style.setProperty("--ry", `${x * 9}deg`);
-    event.currentTarget.style.setProperty("--shine", `${45 + x * 22}%`);
-  };
-  const reset = (event: PointerEvent<HTMLDivElement>) => {
-    event.currentTarget.style.setProperty("--rx", "-2deg");
-    event.currentTarget.style.setProperty("--ry", "3deg");
-  };
+const panelStory = [
+  { label: "Captação", title: "A luz chega às células.", text: "Orientação, inclinação e sombras mudam o que o módulo pode captar." },
+  { label: "Conversão", title: "O inversor prepara a energia.", text: "A corrente produzida pelos módulos é convertida para uso no imóvel." },
+  { label: "Consumo", title: "A geração atende a instalação.", text: "A energia produzida passa a alimentar as cargas conectadas ao sistema." },
+  { label: "Monitoramento", title: "A produção fica visível.", text: "O acompanhamento depende dos equipamentos definidos no projeto." },
+] as const;
+
+const panelFrames = [
+  { rx: 58, ry: -28, rz: -12, scale: .62, x: 31, y: 15, shine: 16 },
+  { rx: 24, ry: -12, rz: -5, scale: .82, x: 19, y: 7, shine: 36 },
+  { rx: 5, ry: 1, rz: 0, scale: 1.02, x: 8, y: -1, shine: 54 },
+  { rx: 20, ry: 19, rz: 4, scale: 1.12, x: -2, y: -4, shine: 75 },
+  { rx: 2, ry: 0, rz: 0, scale: 1.2, x: -12, y: 25, shine: 88 },
+] as const;
+
+const mix = (a: number, b: number, amount: number) => a + (b - a) * amount;
+
+export function SolarScrollStory() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    if (!section || !stage) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let scheduled = false;
+    const render = () => {
+      scheduled = false;
+      if (reduced.matches) return;
+      const rect = section.getBoundingClientRect();
+      const range = Math.max(1, section.offsetHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, -rect.top / range));
+      const scaled = progress * 4;
+      const index = Math.min(3, Math.floor(scaled));
+      const local = Math.min(1, scaled - index);
+      const start = panelFrames[index];
+      const end = panelFrames[index + 1];
+      stage.style.setProperty("--panel-rx", `${mix(start.rx, end.rx, local)}deg`);
+      stage.style.setProperty("--panel-ry", `${mix(start.ry, end.ry, local)}deg`);
+      stage.style.setProperty("--panel-rz", `${mix(start.rz, end.rz, local)}deg`);
+      stage.style.setProperty("--panel-scale", `${mix(start.scale, end.scale, local)}`);
+      stage.style.setProperty("--panel-x", `${mix(start.x, end.x, local)}vw`);
+      stage.style.setProperty("--panel-y", `${mix(start.y, end.y, local)}vh`);
+      stage.style.setProperty("--panel-shine", `${mix(start.shine, end.shine, local)}%`);
+      stage.style.setProperty("--story-progress", `${progress}`);
+      setActive(current => current === index ? current : index);
+    };
+    const queue = () => { if (!scheduled) { scheduled = true; window.requestAnimationFrame(render); } };
+    render();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    return () => { window.removeEventListener("scroll", queue); window.removeEventListener("resize", queue); };
+  }, []);
+
   return (
-    <div className="panel-stage" onPointerMove={move} onPointerLeave={reset}>
-      <div className="solar-object" role="img" aria-label="Representação tridimensional de um módulo fotovoltaico">
-        {Array.from({ length: 48 }).map((_, index) => <span key={index} />)}
+    <section className="solar-scroll-story" ref={sectionRef} aria-label="Como a energia percorre o sistema">
+      <div className="solar-scroll-sticky" ref={stageRef}>
+        <div className="story-grid" aria-hidden="true" />
+        <div className="story-heading"><p className="eyebrow">Como o sistema trabalha</p><span>Role para acompanhar</span></div>
+        <div className="story-copy" aria-live="polite">
+          {panelStory.map((item, index) => <article key={item.label} className={active === index ? "is-active" : ""}><span>0{index + 1} · {item.label}</span><h2>{item.title}</h2><p>{item.text}</p></article>)}
+        </div>
+        <div className="story-panel-wrap" aria-hidden="true">
+          <div className="story-panel"><div className="story-cells">{Array.from({ length: 60 }).map((_, index) => <i key={index} />)}</div></div>
+        </div>
+        <div className="story-rail" aria-hidden="true"><i /><span>01</span><span>02</span><span>03</span><span>04</span></div>
+        <div className="story-spec" aria-hidden="true"><span>Módulo fotovoltaico</span><b>superfície · célula · estrutura</b></div>
       </div>
-      <p>Objeto fotovoltaico <b>48 células</b></p>
-    </div>
+      <div className="story-reduced">
+        {panelStory.map((item, index) => <article key={item.label}><span>0{index + 1}</span><h3>{item.label}</h3><p>{item.text}</p></article>)}
+      </div>
+    </section>
   );
 }
 
-export function SolutionSelector() {
-  const [selected, setSelected] = useState(0);
-  const solution = solutions[selected];
+export function SolutionScrollStory() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    if (!section || !stage) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      const range = Math.max(1, section.offsetHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(.999, -rect.top / range));
+      const scaled = progress * 3;
+      const index = Math.min(2, Math.floor(scaled));
+      stage.style.setProperty("--solution-local", `${scaled - index}`);
+      setActive(current => current === index ? current : index);
+    };
+    const queue = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    return () => { window.removeEventListener("scroll", queue); window.removeEventListener("resize", queue); window.cancelAnimationFrame(frame); };
+  }, []);
+
   return (
-    <div className="solution-selector">
-      <div className="solution-image-wrap">
-        {solutions.map((item, index) => <Image key={item.slug} className={index === selected ? "is-active" : ""} src={item.image} alt="" fill sizes="(max-width: 1024px) 100vw, 60vw" />)}
-        <span className="image-credit">Imagem de referência arquitetônica</span>
-      </div>
-      <div className="solution-copy">
-        <div className="solution-tabs" role="tablist" aria-label="Tipos de projeto">
-          {solutions.map((item, index) => (
-            <button key={item.slug} role="tab" aria-selected={index === selected} onClick={() => setSelected(index)}>
-              <span>0{index + 1}</span>{item.title}
-            </button>
-          ))}
+    <section className="solution-scroll" ref={sectionRef} aria-label="Soluções por tipo de imóvel">
+      <div className="solution-scroll-sticky" ref={stageRef}>
+        <div className="solution-visuals">
+          {solutions.map((item, index) => <Image key={item.slug} className={`${active === index ? "is-active" : ""} ${index < active ? "is-past" : ""}`} src={item.image} alt="" fill sizes="100vw" />)}
         </div>
-        <p className="eyebrow">{solution.kicker}</p>
-        <h3>{solution.title}</h3>
-        <p>{solution.description}</p>
-        <Link className="text-link dark" href={`/solucoes/${solution.slug}`}>Explorar solução <Arrow /></Link>
+        <div className="solution-shade" />
+        <div className="solution-scroll-title"><p className="eyebrow">Projetos por contexto</p><span>Residencial · Empresarial · Rural</span></div>
+        <div className="solution-scroll-copy">
+          <span>0{active + 1}</span><h2>{solutions[active].title}</h2><p>{solutions[active].description}</p><Link className="text-link" href={`/solucoes/${solutions[active].slug}`}>Ver solução <Arrow /></Link>
+        </div>
+        <div className="solution-dots" aria-hidden="true">{solutions.map((item, index) => <i key={item.slug} className={active === index ? "is-active" : ""} />)}</div>
       </div>
-    </div>
+      <div className="solution-reduced">
+        {solutions.map((item, index) => <article key={item.slug}><Image src={item.image} alt="" width={900} height={650} /><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.description}</p><Link href={`/solucoes/${item.slug}`}>Ver solução <Arrow /></Link></article>)}
+      </div>
+    </section>
   );
 }
 
@@ -182,11 +275,9 @@ export function ContactForm() {
 }
 
 export function ProjectFilters() {
-  const [filter, setFilter] = useState("Todos");
   return (
     <div className="project-empty">
-      <div className="filter-row" role="group" aria-label="Filtrar projetos">{["Todos", "Residencial", "Empresarial", "Rural"].map(item => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}</button>)}</div>
-      <div className="project-placeholder"><p className="eyebrow">Acervo em preparação</p><h3>Nenhum case é publicado sem validação.</h3><p>Esta galeria está pronta para receber fotografias, cidade, categoria, capacidade e resultados dos projetos reais da Aba Sol. Até essa curadoria terminar, o site não cria números ou obras fictícias.</p><Link className="text-link dark" href="/projetos/modelo-de-case">Ver o modelo editorial <Arrow /></Link></div>
+      <div className="project-placeholder"><p className="eyebrow">Acervo em preparação</p><h3>Projetos serão publicados após a validação dos dados.</h3><p>Fotografias, cidade, capacidade e resultados precisam ser confirmados antes de entrar no site.</p><Link className="text-link dark" href="/projetos/modelo-de-case">Ver estrutura do case <Arrow /></Link></div>
     </div>
   );
 }
